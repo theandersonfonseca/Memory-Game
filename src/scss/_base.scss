@@ -1,0 +1,84 @@
+//Variables
+$clr-primary: #69c6ba;
+$clr-second: #c66995;
+$clr-red: #ff605c;
+$clr-dark: #333;
+$clr-black: #000;
+$clr-grey: #e6e6e6;
+$clr-white: #fff;
+
+//Mixins Breakpoints
+@mixin for-size($range) {
+  $phone-upper-boundary: 600px;
+  $tablet-portrait-upper-boundary: 900px;
+  $tablet-landscape-upper-boundary: 1200px;
+  $desktop-upper-boundary: 1800px;
+
+  @if $range == phone-only {
+    @media (max-width: #{$phone-upper-boundary - 1}) {
+      @content;
+    }
+  } @else if $range == tablet-portrait-up {
+    @media (min-width: $phone-upper-boundary) {
+      @content;
+    }
+  } @else if $range == tablet-landscape-up {
+    @media (min-width: $tablet-portrait-upper-boundary) {
+      @content;
+    }
+  } @else if $range == desktop-up {
+    @media (min-width: $tablet-landscape-upper-boundary) {
+      @content;
+    }
+  } @else if $range == big-desktop-up {
+    @media (min-width: $desktop-upper-boundary) {
+      @content;
+    }
+  }
+}
+
+//Reset
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  font-size: 62.5%;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  text-rendering: optimizeSpeed;
+  scroll-behavior: smooth;
+  line-height: 1.5;
+  font-family: 'Open sans', sans-serif;
+}
+
+img,
+span,
+input,
+button,
+i {
+  display: block;
+}
+
+img {
+  width: 100%;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+}
+
+input,
+button {
+  font-family: 'Open sans', sans-serif;
+}
+
+//Geral

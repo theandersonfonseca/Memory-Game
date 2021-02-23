@@ -1,0 +1,30 @@
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: $clr-dark;
+  position: relative;
+  padding: 1.5rem;
+}
+
+.container {
+  max-width: 100%;
+  margin-top: 10rem;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-around;
+
+  &__btns {
+    display: flex;
+  }
+}
+
+.memory-game {
+  width: 75rem;
+  height: 50rem;
+  margin-top: 6rem;
+}
