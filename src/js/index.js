@@ -1,320 +1,314 @@
-const memoryGame = (() => {
-  const getElement = (el) => document.querySelector(el);
+const getElement = (el) => document.querySelector(el);
 
-  const gameContainer = getElement('[data-GameContainer]');
-  const selectInput = getElement('[data-select]');
-  const startBtn = getElement('[data-start]');
-  const homeBtn = getElement('[data-home]');
-  const timeBtn = getElement('[data-time]');
+const gameContainer = getElement('[data-GameContainer]');
+const selectInput = getElement('[data-select]');
+const startBtn = getElement('[data-start]');
+const homeBtn = getElement('[data-home]');
+const timeBtn = getElement('[data-time]');
 
-  const modal = getElement('[data-modal]');
-  const modalContainer = getElement('[data-modalContainer]');
+const modal = getElement('[data-modal]');
+const modalContainer = getElement('[data-modalContainer]');
 
-  let firstCard, secondCard, timer, isBestResult;
+let firstCard, secondCard, timer, isBestResult;
 
-  const getResultsFromLocalStorage = (currentDifficulty) => {
-    let results = [];
+const getResultsFromLocalStorage = (currentDifficulty) => {
+  let results = [];
 
-    if (localStorage.hasOwnProperty(currentDifficulty)) {
-      results = JSON.parse(localStorage.getItem(currentDifficulty));
-    }
+  if (localStorage.hasOwnProperty(currentDifficulty)) {
+    results = JSON.parse(localStorage.getItem(currentDifficulty));
+  }
 
-    return results;
-  };
+  return results;
+};
 
-  const saveResultInLocalStorage = (finalTime, currentDifficulty) => {
-    const results = [
-      ...getResultsFromLocalStorage(currentDifficulty),
-      finalTime,
-    ];
+const saveResultInLocalStorage = (finalTime, currentDifficulty) => {
+  const results = [...getResultsFromLocalStorage(currentDifficulty), finalTime];
 
-    localStorage.setItem(currentDifficulty, JSON.stringify(results));
-  };
+  localStorage.setItem(currentDifficulty, JSON.stringify(results));
+};
 
-  const convertTimesToNumbers = (results) => {
-    const numbersArr = [];
+const convertTimesToNumbers = (results) => {
+  const numbersArr = [];
 
-    results.forEach((el) => {
-      const timeArr = el.split(':');
-      const secondsToMinutes = +timeArr[1] / 60;
-      const number = +timeArr[0] + secondsToMinutes;
+  results.forEach((el) => {
+    const timeArr = el.split(':');
+    const secondsToMinutes = +timeArr[1] / 60;
+    const number = +timeArr[0] + secondsToMinutes;
 
-      numbersArr.push(number);
-    });
+    numbersArr.push(number);
+  });
 
-    return numbersArr;
-  };
+  return numbersArr;
+};
 
-  const getBestResult = (currentDifficulty) => {
-    const results = getResultsFromLocalStorage(currentDifficulty);
+const getBestResult = (currentDifficulty) => {
+  const results = getResultsFromLocalStorage(currentDifficulty);
 
-    const numbers = convertTimesToNumbers(results);
-    const minNumber = Math.min(...numbers);
-    const bestResult = results[numbers.indexOf(minNumber)];
+  const numbers = convertTimesToNumbers(results);
+  const minNumber = Math.min(...numbers);
+  const bestResult = results[numbers.indexOf(minNumber)];
 
-    bestResult === timeBtn.innerHTML
-      ? (isBestResult = true)
-      : (isBestResult = false);
+  bestResult === timeBtn.innerHTML
+    ? (isBestResult = true)
+    : (isBestResult = false);
 
-    return bestResult || timeBtn.innerHTML;
-  };
+  return bestResult || timeBtn.innerHTML;
+};
 
-  const closeModal = (e) => {
-    if (e.target.classList.contains('modal__close')) {
-      modal.classList.remove('modal--active');
-      goToHome();
-    }
-  };
+const closeModal = (e) => {
+  if (e.target.classList.contains('modal__close')) {
+    modal.classList.remove('modal--active');
+    goToHome();
+  }
+};
 
-  const chooseModalText = (bestResult) => {
-    const modalTexts = {
-      notRecord: `o recorde para
+const chooseModalText = (bestResult) => {
+  const modalTexts = {
+    notRecord: `o recorde para
                   esse nível é <span class="modal__text--time">${bestResult}</span>
                   😄`,
 
-      newRecord: `parabéns, você bateu o recorde desse nível 🔥🔥🔥`,
-    };
-
-    const text = isBestResult ? modalTexts.newRecord : modalTexts.notRecord;
-
-    return text;
+    newRecord: `parabéns, você bateu o recorde desse nível 🔥🔥🔥`,
   };
 
-  const createModalText = (finalTime, currentDifficulty) => {
-    const bestResult = getBestResult(currentDifficulty);
+  const text = isBestResult ? modalTexts.newRecord : modalTexts.notRecord;
 
-    const el = document.createElement('span');
-    el.classList.add('modal__text');
+  return text;
+};
 
-    el.innerHTML = `<h2 class="modal__title">✨ Finalizado!!! ✨</h2>
+const createModalText = (finalTime, currentDifficulty) => {
+  const bestResult = getBestResult(currentDifficulty);
+
+  const el = document.createElement('span');
+  el.classList.add('modal__text');
+
+  el.innerHTML = `<h2 class="modal__title">✨ Finalizado!!! ✨</h2>
                     <span class="modal__text">Seu tempo final foi
                     <span class="modal__text--time">${finalTime}</span>, 
                     ${chooseModalText(bestResult)}</span>
                     <i class="modal__close fas fa-times"></i>`;
 
-    return el;
-  };
+  return el;
+};
 
-  const showModal = (finalTime, currentDifficulty) => {
-    modalContainer.innerHTML = '';
-    modalContainer.appendChild(createModalText(finalTime, currentDifficulty));
+const showModal = (finalTime, currentDifficulty) => {
+  modalContainer.innerHTML = '';
+  modalContainer.appendChild(createModalText(finalTime, currentDifficulty));
 
-    modal.classList.add('modal--active');
+  modal.classList.add('modal--active');
 
-    modal.addEventListener('click', closeModal);
-  };
+  modal.addEventListener('click', closeModal);
+};
 
-  const finishGame = () => {
-    clearInterval(timer);
+const finishGame = () => {
+  clearInterval(timer);
 
-    const finalTime = timeBtn.innerHTML;
-    const currentDifficulty = selectInput.value;
+  const finalTime = timeBtn.innerHTML;
+  const currentDifficulty = selectInput.value;
 
-    saveResultInLocalStorage(finalTime, currentDifficulty);
-    showModal(finalTime, currentDifficulty);
-  };
+  saveResultInLocalStorage(finalTime, currentDifficulty);
+  showModal(finalTime, currentDifficulty);
+};
 
-  const handleCardClickEvent = (addOrRemove, card) => {
-    addOrRemove === 'add'
-      ? card.addEventListener('click', handleClickOnCard)
-      : card.removeEventListener('click', handleClickOnCard);
-  };
+const handleCardClickEvent = (addOrRemove, card) => {
+  addOrRemove === 'add'
+    ? card.addEventListener('click', handleClickOnCard)
+    : card.removeEventListener('click', handleClickOnCard);
+};
 
-  const getCards = () => [...document.querySelectorAll('[data-card]')];
+const getCards = () => [...document.querySelectorAll('[data-card]')];
 
-  const lockMatchedCards = () => {
-    const notMatchedCards = [...getCards()].filter(
-      (card) => !card.classList.contains('matched')
+const lockMatchedCards = () => {
+  const notMatchedCards = [...getCards()].filter(
+    (card) => !card.classList.contains('matched')
+  );
+
+  notMatchedCards.forEach((card) => {
+    handleCardClickEvent('add', card);
+  });
+
+  if (notMatchedCards.length === 0) finishGame();
+};
+
+const checkForCardMatch = () => {
+  if (firstCard.dataset.card === secondCard.dataset.card) {
+    [firstCard, secondCard].forEach((card) => {
+      handleCardClickEvent('remove', card);
+      card.classList.add('matched');
+    });
+  } else {
+    [firstCard, secondCard].forEach((card) =>
+      card.classList.remove('memory-game__card--selected')
     );
+  }
 
-    notMatchedCards.forEach((card) => {
-      handleCardClickEvent('add', card);
-    });
+  firstCard = null;
+  secondCard = null;
 
-    if (notMatchedCards.length === 0) finishGame();
-  };
+  lockMatchedCards();
+};
 
-  const checkForCardMatch = () => {
-    if (firstCard.dataset.card === secondCard.dataset.card) {
-      [firstCard, secondCard].forEach((card) => {
-        handleCardClickEvent('remove', card);
-        card.classList.add('matched');
-      });
-    } else {
-      [firstCard, secondCard].forEach((card) =>
-        card.classList.remove('memory-game__card--selected')
-      );
-    }
+const handleClickOnCard = (e) => {
+  const target = e.currentTarget;
 
-    firstCard = null;
-    secondCard = null;
+  handleCardClickEvent('remove', target);
 
-    lockMatchedCards();
-  };
+  target.classList.add('memory-game__card--selected');
 
-  const handleClickOnCard = (e) => {
-    const target = e.currentTarget;
+  !firstCard ? (firstCard = target) : (secondCard = target);
 
-    handleCardClickEvent('remove', target);
-
-    target.classList.add('memory-game__card--selected');
-
-    !firstCard ? (firstCard = target) : (secondCard = target);
-
-    if (firstCard && secondCard) {
-      getCards().forEach((card) => {
-        handleCardClickEvent('remove', card);
-      });
-
-      setTimeout(() => checkForCardMatch(), 500);
-    }
-  };
-
-  const shuffleCards = (totalCards) => {
+  if (firstCard && secondCard) {
     getCards().forEach((card) => {
-      const randomNumber = Math.floor(Math.random() * totalCards);
-      card.style.order = randomNumber;
+      handleCardClickEvent('remove', card);
     });
-  };
 
-  const isCountryRepeated = (countriesPaths, countryPath) =>
-    countriesPaths.includes(countryPath);
+    setTimeout(() => checkForCardMatch(), 500);
+  }
+};
 
-  const getCountriesFromDirectory = (maxCountries) => {
-    const countriesPaths = [];
-    const totalCountriesAvailable = 250;
+const shuffleCards = (totalCards) => {
+  getCards().forEach((card) => {
+    const randomNumber = Math.floor(Math.random() * totalCards);
+    card.style.order = randomNumber;
+  });
+};
 
-    while (countriesPaths.length < maxCountries) {
-      const randomIndex =
-        Math.floor(Math.random() * totalCountriesAvailable) + 1;
+const isCountryRepeated = (countriesPaths, countryPath) =>
+  countriesPaths.includes(countryPath);
 
-      const countryPath = `./img/country (${randomIndex}).png`;
+const getCountriesFromDirectory = (maxCountries) => {
+  const countriesPaths = [];
+  const totalCountriesAvailable = 250;
 
-      if (isCountryRepeated(countriesPaths, countryPath)) continue;
+  while (countriesPaths.length < maxCountries) {
+    const randomIndex = Math.floor(Math.random() * totalCountriesAvailable) + 1;
 
-      countriesPaths.push(countryPath);
-    }
+    const countryPath = `./img/country (${randomIndex}).png`;
 
-    return [...countriesPaths, ...countriesPaths];
-  };
+    if (isCountryRepeated(countriesPaths, countryPath)) continue;
 
-  const generateCards = (countriesQuantity = 12) => {
-    gameContainer.innerHTML = '';
+    countriesPaths.push(countryPath);
+  }
 
-    const totalCards = countriesQuantity * 2;
-    const countriesPaths = getCountriesFromDirectory(countriesQuantity);
+  return [...countriesPaths, ...countriesPaths];
+};
 
-    for (let i = 0; i < totalCards; i++) {
-      const el = document.createElement('div');
-      el.setAttribute('data-card', `${countriesPaths[i]}`);
-      el.classList.add('memory-game__card');
+const generateCards = (countriesQuantity = 12) => {
+  gameContainer.innerHTML = '';
 
-      el.innerHTML = `<img class="memory-game__back" src="./img/earth.png"/>
+  const totalCards = countriesQuantity * 2;
+  const countriesPaths = getCountriesFromDirectory(countriesQuantity);
+
+  for (let i = 0; i < totalCards; i++) {
+    const el = document.createElement('div');
+    el.setAttribute('data-card', `${countriesPaths[i]}`);
+    el.classList.add('memory-game__card');
+
+    el.innerHTML = `<img class="memory-game__back" src="./img/earth.png"/>
                       <img
                         class="memory-game__img memory-game__front"
                         src="${countriesPaths[i]}"
                       />
                       `;
 
-      gameContainer.appendChild(el);
+    gameContainer.appendChild(el);
+  }
+
+  shuffleCards(totalCards);
+};
+
+const startTimer = () => {
+  let seconds = 0;
+  let minutes = 0;
+
+  timer = setInterval(() => {
+    seconds++;
+
+    if (seconds === 60) {
+      minutes++;
+      seconds = 0;
     }
 
-    shuffleCards(totalCards);
-  };
+    const configSeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
+    const configMinutes = minutes < 10 ? `0${minutes}` : `${minutes}`;
 
-  const startTimer = () => {
-    let seconds = 0;
-    let minutes = 0;
+    timeBtn.innerHTML = `${configMinutes}:${configSeconds}`;
+  }, 1000);
+};
 
-    timer = setInterval(() => {
-      seconds++;
+const startGame = () => {
+  startTimer();
+  handleBtnsDisplay(true);
 
-      if (seconds === 60) {
-        minutes++;
-        seconds = 0;
-      }
+  getCards().forEach((card) => {
+    handleCardClickEvent('add', card);
+  });
+};
 
-      const configSeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
-      const configMinutes = minutes < 10 ? `0${minutes}` : `${minutes}`;
+const setDifficulty = (difficulty = 'easy') => {
+  const easyDifficultyCountriesQuantity = 12;
+  const mediumDifficultyCountriesQuantity = 20;
+  const hardDifficultyCountriesQuantity = 30;
 
-      timeBtn.innerHTML = `${configMinutes}:${configSeconds}`;
-    }, 1000);
-  };
+  switch (difficulty) {
+    case 'medium':
+      gameContainer.classList.add('memory-game__medium');
+      generateCards(mediumDifficultyCountriesQuantity);
+      break;
+    case 'hard':
+      gameContainer.classList.add('memory-game__hard');
+      generateCards(hardDifficultyCountriesQuantity);
+      break;
+    default:
+      gameContainer.classList.add('memory-game__easy');
+      generateCards(easyDifficultyCountriesQuantity);
+      break;
+  }
+};
 
-  const startGame = () => {
-    startTimer();
-    handleBtnsDisplay(true);
+const removeDifficultyClasses = () => {
+  gameContainer.classList.remove(
+    'memory-game__easy',
+    'memory-game__medium',
+    'memory-game__hard'
+  );
+};
 
-    getCards().forEach((card) => {
-      handleCardClickEvent('add', card);
-    });
-  };
+const handleBtnsDisplay = (isStarted) => {
+  const displayHomeBtnsValue = isStarted ? 'none' : 'block';
+  const displayStartButtonsValue = isStarted ? 'block' : 'none';
 
-  const setDifficulty = (difficulty = 'easy') => {
-    const easyDifficultyCountriesQuantity = 12;
-    const mediumDifficultyCountriesQuantity = 20;
-    const hardDifficultyCountriesQuantity = 30;
+  [selectInput, startBtn].forEach(
+    (btn) => (btn.style.display = displayHomeBtnsValue)
+  );
 
-    switch (difficulty) {
-      case 'medium':
-        gameContainer.classList.add('memory-game__medium');
-        generateCards(mediumDifficultyCountriesQuantity);
-        break;
-      case 'hard':
-        gameContainer.classList.add('memory-game__hard');
-        generateCards(hardDifficultyCountriesQuantity);
-        break;
-      default:
-        gameContainer.classList.add('memory-game__easy');
-        generateCards(easyDifficultyCountriesQuantity);
-        break;
-    }
-  };
+  [homeBtn, timeBtn].forEach(
+    (btn) => (btn.style.display = displayStartButtonsValue)
+  );
+};
 
-  const removeDifficultyClasses = () => {
-    gameContainer.classList.remove(
-      'memory-game__easy',
-      'memory-game__medium',
-      'memory-game__hard'
-    );
-  };
+const resetGame = () => {
+  clearInterval(timer);
+  timeBtn.innerHTML = '00:00';
+  selectInput.value = 'easy';
+};
 
-  const handleBtnsDisplay = (isStarted) => {
-    const displayHomeBtnsValue = isStarted ? 'none' : 'block';
-    const displayStartButtonsValue = isStarted ? 'block' : 'none';
+const goToHome = () => {
+  resetGame();
+  handleBtnsDisplay(false);
+  removeDifficultyClasses();
+  setDifficulty();
+};
 
-    [selectInput, startBtn].forEach(
-      (btn) => (btn.style.display = displayHomeBtnsValue)
-    );
-
-    [homeBtn, timeBtn].forEach(
-      (btn) => (btn.style.display = displayStartButtonsValue)
-    );
-  };
-
-  const resetGame = () => {
-    clearInterval(timer);
-    timeBtn.innerHTML = '00:00';
-    selectInput.value = 'easy';
-  };
-
-  const goToHome = () => {
-    resetGame();
-    handleBtnsDisplay(false);
+const handleControls = () => {
+  selectInput.addEventListener('change', (e) => {
     removeDifficultyClasses();
-    setDifficulty();
-  };
+    setDifficulty(e.target.value);
+  });
 
-  const handleControls = () => {
-    selectInput.addEventListener('change', (e) => {
-      removeDifficultyClasses();
-      setDifficulty(e.target.value);
-    });
+  startBtn.addEventListener('click', startGame);
+  homeBtn.addEventListener('click', goToHome);
+};
 
-    startBtn.addEventListener('click', startGame);
-    homeBtn.addEventListener('click', goToHome);
-  };
-
-  generateCards();
-  handleControls();
-})();
+generateCards();
+handleControls();
