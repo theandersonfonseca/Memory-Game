@@ -1,14 +1,6 @@
 # Memory-game
 
-Jogo da Memória com tema de países do mundo, feito com SASS e JS puro.
+Jogo da Memória com tema de países do mundo, feito com SASS e JS puro, o jogo possui 3 níveis de dificuldade sendo, fácil com 12 pares, médio com 24 pares e difícil com 20 pares, a partir do nível escolhido, os países são gerados randomicamente na página, dentre mais de 250 opções. Ao finalizar cada partida, o resultado fica salvo no local storage, e é comparado com resultados anteriores, logo em seguida é exibido um modal congratulando o usuário de acordo com o resultado.
 
-- [x] 3 níveis diferentes (fácil = 12 pares, médio = 24 pares e difícil = 30 pares)
-- [x] A partir do nível escolhido, gerar os países randomicamente no HTML, dentre mais de 250 opcões que estão no arquivo img
-- [x] Ao finalizar cada game, salvar tempo no Local Storage, e verificar se é um novo recorde de acordo o nível
-- [x] Em seguida, exibir modal com uma mensagem congratulando o usuário de acordo com o resultado
+![](src/img/memory-game.gif)
 
-![](src/img/print1.png)
-![](src/img/print2.png)
-![](src/img/print3.png)
-![](src/img/print4.png)
-![](src/img/print5.png)
