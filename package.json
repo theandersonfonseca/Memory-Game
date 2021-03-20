@@ -1,5 +1,5 @@
 {
-  "name": "slide1",
+  "name": "memory-game",
   "version": "1.0.0",
   "scripts": {
     "watch:scss": "node-sass src/scss/main.scss dist/main.css -w",
