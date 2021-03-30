@@ -4,3 +4,4 @@ Jogo da Memória com tema de países do mundo, feito com SASS e JS puro, o jogo 
 
 ![](src/img/memory-game.gif)
 
+![](src/img/modal-result.png)
